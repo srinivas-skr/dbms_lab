@@ -1,0 +1,132 @@
+CREATE TABLE EMPLOYEE (
+    Fname VARCHAR(255),
+    Mname VARCHAR(1),
+    Lname VARCHAR(255),
+    Ssn INT NOT NULL,
+    Bdate DATE,
+    Address VARCHAR(255),
+    Sex VARCHAR(1),
+    Salary INT,
+    Super_ssn INT,
+    PRIMARY KEY (Ssn),
+    FOREIGN KEY (Super_ssn) REFERENCES EMPLOYEE(Ssn)
+);
+INSERT INTO EMPLOYEE (Fname, Mname, Lname, Ssn, Bdate, Address, Sex, Salary, Super_ssn)
+VALUES 
+    ('John', 'D', 'Doe', 111111111, '1990-01-01', '123 Main St', 'M', 50000, NULL),
+    ('Jane', 'A', 'Smith', 222222222, '1995-05-15', '456 Oak St', 'F', 60000, 111111111),
+    ('Bob', 'K', 'Johnson', 333333333, '1985-08-20', '789 Pine St', 'M', 70000, 111111111);
+
+
+
+
+
+
+CREATE TABLE DEPARTMENT (
+    Dname VARCHAR(255),
+    Dnumber INT NOT NULL,
+    Mgr_ssn INT,
+    Mgr_start_date DATE,
+    PRIMARY KEY (Dnumber),
+    FOREIGN KEY (Mgr_ssn) REFERENCES EMPLOYEE(Ssn)
+);
+INSERT INTO DEPARTMENT (Dname, Dnumber, Mgr_ssn, Mgr_start_date)
+VALUES 
+    ('HR Department', 1, 222222222, '2020-01-01'),
+    ('IT Department', 2, 333333333, '2018-05-01');
+
+
+
+
+
+ALTER TABLE EMPLOYEE
+ADD COLUMN Dno INT,
+ADD FOREIGN KEY (Dno) REFERENCES DEPARTMENT(Dnumber);
+
+UPDATE EMPLOYEE SET Dno = 1 WHERE Ssn = 111111111;
+UPDATE EMPLOYEE SET Dno = 1 WHERE Ssn = 222222222;
+UPDATE EMPLOYEE SET Dno = 2 WHERE Ssn = 333333333;
+
+
+
+CREATE TABLE DEPT_LOCATIONS (
+    Dnumber INT NOT NULL,
+    Dlocation VARCHAR(255),
+    PRIMARY KEY (Dnumber, Dlocation),
+    FOREIGN KEY (Dnumber) REFERENCES DEPARTMENT(Dnumber)
+);
+INSERT INTO DEPT_LOCATIONS (Dnumber, Dlocation)
+VALUES 
+    (1, 'New York'),
+    (1, 'Chicago'),
+    (2, 'Los Angeles');
+
+
+CREATE TABLE PROJECT (
+    Pname VARCHAR(255),
+    Pnumber INT NOT NULL,
+    Plocation VARCHAR(255),
+    Dnum INT,
+    PRIMARY KEY (Pnumber),
+    FOREIGN KEY (Dnum) REFERENCES DEPARTMENT(Dnumber)
+);
+INSERT INTO PROJECT (Pname, Pnumber, Plocation, Dnum)
+VALUES 
+    ('Project1', 101, 'New York', 1),
+    ('Project2', 102, 'Chicago', 1),
+    ('Project3', 103, 'Los Angeles', 2);
+	
+	
+
+CREATE TABLE WORKS_ON (
+    Essn INT NOT NULL,
+    Pho INT NOT NULL,
+    Hours DECIMAL(5,2),
+    PRIMARY KEY (Essn, Pho),
+    FOREIGN KEY (Essn) REFERENCES EMPLOYEE(Ssn),
+    FOREIGN KEY (Pho) REFERENCES PROJECT(Pnumber)
+);
+INSERT INTO WORKS_ON (Essn, Pho, Hours)
+VALUES 
+    (111111111, 101, 20.5), 
+    (222222222, 102, 15.0),  
+    (333333333, 103, 25.5);  
+	
+
+CREATE TABLE DEPENDENT (
+    Essn INT NOT NULL,
+    Dependent_name VARCHAR(255),
+    Sex VARCHAR(1),
+    Bdate DATE,
+    Relationship VARCHAR(255),
+    PRIMARY KEY (Essn, Dependent_name),
+    FOREIGN KEY (Essn) REFERENCES EMPLOYEE(Ssn)
+);
+INSERT INTO DEPENDENT (Essn, Dependent_name, Sex, Bdate, Relationship)
+VALUES 
+    (111111111, 'Child1', 'F', '2010-01-15', 'Child'),
+    (222222222, 'Spouse1', 'M', '1985-05-20', 'Spouse'),
+    (333333333, 'Child2', 'M', '2015-08-10', 'Child');
+
+
+
+---QUERIES
+
+SELECT Fname, Lname
+FROM EMPLOYEE
+WHERE Ssn = 111111111;
+
+
+SELECT Fname, Lname
+FROM EMPLOYEE
+WHERE YEAR(Bdate) = 1985
+  AND Salary > 20000;
+
+
+SELECT Dlocation
+FROM DEPARTMENT
+WHERE Dlocation = 'New Delhi';
+
+SELECT Fname, Lname
+FROM EMPLOYEE
+WHERE Ssn = 111111111 AND Sex = 'M';

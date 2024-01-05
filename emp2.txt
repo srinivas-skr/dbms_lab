@@ -1,0 +1,58 @@
+
+CREATE TABLE EMPLOYE (
+    SSN INT PRIMARY KEY NOT NULL,
+    E_name VARCHAR(255),
+    E_address VARCHAR(255),
+    E_ph_no BIGINT,
+    Salary INT
+);
+
+INSERT INTO EMPLOYE (SSN, E_name, E_address, E_ph_no, Salary)
+VALUES
+    (111, 'John Doe', '123 Main St', 9212345678, 50000),
+    (222, 'Jane Smith', '456 Oak St', 9856789012, 60000),
+    (333, 'Bob Johnson', '789 Pine St', 9290123456, 55000);
+
+
+CREATE TABLE DEPT1 (
+    dept_no INT PRIMARY KEY,
+    dept_name VARCHAR(30),
+    mgr_ssn INT,
+    FOREIGN KEY (mgr_ssn) REFERENCES EMPLOYE(SSN)
+);
+
+
+INSERT INTO DEPT1 (dept_no, dept_name, mgr_ssn)
+VALUES
+    (1, 'HR Department', 111),
+    (2, 'IT Department', 222),
+    (3, 'Finance Department', 333);
+
+ALTER TABLE EMPLOYE
+ADD COLUMN dept_no INT,
+ADD FOREIGN KEY (dept_no) REFERENCES DEPT1(dept_no);
+
+UPDATE EMPLOYE SET dept_no = 1 WHERE SSN = 111;
+UPDATE EMPLOYE SET dept_no = 1 WHERE SSN = 222;
+UPDATE EMPLOYE SET dept_no = 2 WHERE SSN = 333;
+
+
+
+ALTER TABLE DEPT
+ADD COLUMN MgrStartDate DATE;
+
+
+
+SELECT E_name, Salary * 1.15 AS Salary
+FROM EMPLOYE;
+
+SELECT E.E_name, E.E_address
+FROM EMPLOYE E
+JOIN DEPT1 D ON E.dept_no = D.dept_no
+WHERE D.dept_name = 'HR Department'
+ORDER BY E.E_address ASC;
+
+SELECT *
+FROM EMPLOYE
+WHERE dept_no <> 101;
+
