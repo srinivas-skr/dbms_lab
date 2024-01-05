@@ -1,0 +1,29 @@
+CREATE TABLE reserves (
+    sid INTEGER,
+    bid INTEGER,
+    day DATE
+);
+
+
+INSERT INTO reserves (sid, bid, day)
+VALUES
+    (1, 101, '2024-01-05'),
+    (2, 102, '2024-01-06'),
+    (3, 103, '2024-01-07');
+
+ALTER TABLE reserves
+ADD COLUMN time INTEGER;
+
+ALTER TABLE reserves
+MODIFY COLUMN day DATE;
+
+
+ALTER TABLE reserves
+DROP COLUMN time;
+
+DELETE FROM reserves
+WHERE sid = 1;
+
+DROP TABLE reserves;
+
+

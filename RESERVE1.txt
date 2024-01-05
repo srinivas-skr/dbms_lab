@@ -1,0 +1,33 @@
+
+CREATE TABLE Sailors (
+    sid INTEGER,
+    sname VARCHAR(255),
+    rating INTEGER,
+    age REAL,
+    PRIMARY KEY (sid)
+);
+
+
+INSERT INTO Sailors (sid, sname, rating, age)
+VALUES
+    (1, 'John Doe', 8, 25.5),
+    (2, 'Jane Smith', 7, 28.3),
+    (3, 'Bob Johnson', 6, 22.1);
+
+
+
+CREATE TABLE Boats (
+    bid INTEGER,
+    bname VARCHAR(255),  
+    color VARCHAR(255),  
+    PRIMARY KEY (bid)
+);
+
+
+CREATE TABLE Reserves (
+    sid INTEGER,
+    bid INTEGER,
+    day DATE,
+    FOREIGN KEY (sid) REFERENCES Sailors(sid),
+    FOREIGN KEY (bid) REFERENCES Boats(bid)
+);

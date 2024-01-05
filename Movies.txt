@@ -1,0 +1,169 @@
+QUESTION 6 Movies 
+
+-- Creating the ACTOR table
+CREATE TABLE ACTOR (
+    Act_id INT PRIMARY KEY,
+    Act_Name VARCHAR(100),
+    Act_Gender VARCHAR(10)
+);
+
+-- Creating the DIRECTOR table
+CREATE TABLE DIRECTOR (
+    Dir_id INT PRIMARY KEY,
+    Dir_Name VARCHAR(100),
+    Dir_Phone VARCHAR(20)
+);
+
+-- Creating the MOVIES table
+CREATE TABLE MOVIES (
+    Mov_id INT PRIMARY KEY,
+    Mov_Title VARCHAR(200),
+    Mov_Year INT,
+    Mov_Lang VARCHAR(50),
+    Dir_id INT,
+    FOREIGN KEY (Dir_id) REFERENCES DIRECTOR(Dir_id)
+);
+
+-- Creating the MOVIE_CAST table
+CREATE TABLE MOVIE_CAST (
+    Act_id INT,
+    Mov_id INT,
+    Role VARCHAR(100),
+    FOREIGN KEY (Act_id) REFERENCES ACTOR(Act_id),
+    FOREIGN KEY (Mov_id) REFERENCES MOVIES(Mov_id)
+);
+
+-- Creating the RATING table
+CREATE TABLE RATING (
+    Mov_id INT PRIMARY KEY,
+    Rev_Stars DECIMAL(3, 2),
+    FOREIGN KEY (Mov_id) REFERENCES MOVIES(Mov_id)
+);
+
+
+-- Inserting data into the ACTOR table
+INSERT INTO ACTOR (Act_id, Act_Name, Act_Gender) VALUES
+(1, 'Tom Hanks', 'Male'),
+(2, 'Meryl Streep', 'Female'),
+(3, 'Leonardo DiCaprio', 'Male'),
+(4, 'Scarlett Johansson', 'Female'),
+(5, 'Brad Pitt', 'Male'),
+(6, 'Jennifer Lawrence', 'Female'),
+(7, 'Johnny Depp', 'Male'),
+(8, 'Natalie Portman', 'Female'),
+(9, 'Denzel Washington', 'Male'),
+(10, 'Emma Stone', 'Female');
+
+-- Inserting data into the DIRECTOR table
+INSERT INTO DIRECTOR (Dir_id, Dir_Name, Dir_Phone) VALUES
+(1, 'Christopher Nolan', '123-456-7890'),
+(2, 'Steven Spielberg', '987-654-3210'),
+(3, 'Martin Scorsese', '111-222-3333'),
+(4, 'Quentin Tarantino', '444-555-6666'),
+(5, 'James Cameron', '777-888-9999'),
+(6, 'David Fincher', '000-999-8888'),
+(7, 'Tim Burton', '555-444-3333'),
+(8, 'Sofia Coppola', '222-333-4444'),
+(9, 'Clint Eastwood', '999-888-7777'),
+(10, 'Greta Gerwig', '333-222-1111');
+
+-- Inserting data into the MOVIES table
+INSERT INTO MOVIES (Mov_id, Mov_Title, Mov_Year, Mov_Lang, Dir_id) VALUES
+(1, 'Inception', 2010, 'English', 1),
+(2, 'Saving Private Ryan', 1998, 'English', 2),
+(3, 'The Departed', 2006, 'English', 3),
+(4, 'Pulp Fiction', 1994, 'English', 4),
+(5, 'Titanic', 1997, 'English', 5),
+(6, 'Fight Club', 1999, 'English', 6),
+(7, 'Edward Scissorhands', 1990, 'English', 7),
+(8, 'Lost in Translation', 2003, 'English', 8),
+(9, 'Million Dollar Baby', 2004, 'English', 9),
+(10, 'Little Women', 2019, 'English', 10);
+
+-- Inserting data into the MOVIE_CAST table
+INSERT INTO MOVIE_CAST (Act_id, Mov_id, Role) VALUES
+(1, 1, 'Cobb'),
+(2, 1, 'Mal'),
+(3, 2, 'Captain John H. Miller'),
+(4, 2, 'Private Ryan'),
+(5, 3, 'Billy Costigan'),
+(6, 3, 'Madolyn'),
+(7, 4, 'Jules Winnfield'),
+(8, 4, 'Mia Wallace'),
+(9, 5, 'Jack Dawson'),
+(10, 5, 'Rose DeWitt Bukater'),
+(1, 6, 'Tyler Durden'),
+(6, 6, 'Marla Singer'),
+(7, 7, 'Edward Scissorhands'),
+(8, 7, 'Kim Boggs'),
+(9, 8, 'Bob Barnes'),
+(10, 8, 'Charlotte'),
+(2, 9, 'Frankie Dunn'),
+(4, 9, 'Maggie Fitzgerald'),
+(3, 10, 'Theodore "Laurie" Laurence'),
+(10, 10, 'Margaret "Meg" March');
+
+-- Inserting data into the RATING table
+INSERT INTO RATING (Mov_id, Rev_Stars) VALUES
+(1, 4.5),
+(2, 4.8),
+(3, 4.6),
+(4, 4.7),
+(5, 4.9),
+(6, 4.4),
+(7, 4.3),
+(8, 4.7),
+(9, 4.6),
+(10, 4.8);
+
+
+1. List the titles of all movies directed by ‘Rajkumar’. 
+
+SELECT Mov_Title
+FROM MOVIES
+INNER JOIN DIRECTOR ON MOVIES.Dir_id = DIRECTOR.Dir_id
+WHERE Dir_Name = 'Rajkumar';
+
+
+2. Find the movie names where one or more actors acted in two or more movies. 
+
+SELECT Mov_Title
+FROM MOVIES
+INNER JOIN MOVIE_CAST ON MOVIES.Mov_id = MOVIE_CAST.Mov_id
+GROUP BY MOVIE_CAST.Act_id
+HAVING COUNT(DISTINCT MOVIE_CAST.Mov_id) >= 2;
+
+
+3. List all actors who acted in a movie before 2010 and also in a movie after 2015 (use JOIN operation).
+
+SELECT DISTINCT Act_Name
+FROM ACTOR
+INNER JOIN MOVIE_CAST ON ACTOR.Act_id = MOVIE_CAST.Act_id
+INNER JOIN MOVIES ON MOVIE_CAST.Mov_id = MOVIES.Mov_id
+WHERE MOVIES.Mov_Year < 2010 OR MOVIES.Mov_Year > 2015;
+
+
+4. Find the title of movies and number of stars for each movie that has at least one rating and find the highest number of stars that movie received. Sort the result by movie title.
+
+SELECT MOVIES.Mov_Title, COALESCE(RATING.Rev_Stars, 0) AS Stars
+FROM MOVIES
+LEFT JOIN RATING ON MOVIES.Mov_id = RATING.Mov_id
+WHERE RATING.Rev_Stars IS NOT NULL
+ORDER BY MOVIES.Mov_Title;
+
+-- To find the highest number of stars received by any movie
+SELECT MAX(COALESCE(Rev_Stars, 0)) AS HighestStars
+FROM RATING;
+
+5.Update ratings of all movies directed by Maniratnam
+
+UPDATE RATING
+SET Rev_Stars = New_Rating
+FROM RATING
+INNER JOIN MOVIES ON RATING.Mov_id = MOVIES.Mov_id
+INNER JOIN DIRECTOR ON MOVIES.Dir_id = DIRECTOR.Dir_id
+WHERE DIRECTOR.Dir_Name = 'Maniratnam';
+
+-- Example: If you want to set all ratings to a specific value, replace New_Rating with the desired value.
+-- For instance: SET Rev_Stars = 4.0
+
