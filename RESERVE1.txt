@@ -23,6 +23,13 @@ CREATE TABLE Boats (
     PRIMARY KEY (bid)
 );
 
+INSERT INTO Boats (bid, bname, color)
+VALUES
+    (101, 'Sailboat 1', 'Blue'),
+    (102, 'Rowboat 1', 'Green'),
+    (103, 'Yacht 1', 'Red');
+
+
 
 CREATE TABLE Reserves (
     sid INTEGER,
@@ -31,3 +38,32 @@ CREATE TABLE Reserves (
     FOREIGN KEY (sid) REFERENCES Sailors(sid),
     FOREIGN KEY (bid) REFERENCES Boats(bid)
 );
+
+INSERT INTO Reserves (sid, bid, day)
+VALUES
+    (1, 101, '2024-01-05'),
+    (2, 102, '2024-01-06'),
+    (3, 103, '2024-01-07');
+	
+	
+	
+SELECT s.sname
+FROM Sailors s
+LEFT JOIN Reserves r ON s.sid = r.sid
+WHERE r.bid IS NULL OR r.bid <> 103;
+
+
+---red boats are reserved find name of sailor
+SELECT DISTINCT s.sname
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+JOIN Boats b ON r.bid = b.bid
+WHERE b.color = 'Red';
+
+
+SELECT b.color
+FROM Sailors s
+JOIN Reserves r ON s.sid = r.sid
+JOIN Boats b ON r.bid = b.bid
+WHERE s.sname = 'John Doe';
+
